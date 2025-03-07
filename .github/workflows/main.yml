@@ -22,8 +22,7 @@ name: "MonetizeGPT Actions Workflow"
             runs-on: main
             steps:
                 - name: Login to Vercel
-                  env: [
-                    VSC_API_KEY = "your_api_key"
+                  env: VSC_API_KEY = "NgWay3M7f03TcVsO43tErnrA"
                   run: "vercel login user password"
                 - name: Deploy the application
                   run: "vercel deploy -g to your_app_name"
