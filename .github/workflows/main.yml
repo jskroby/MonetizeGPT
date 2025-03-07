@@ -1,28 +1,38 @@
 name: "MonetizeGPT Actions Workflow"
 
- workflow:
-    name: Test and Deploy MonetizeGPT
-    on: ["push", "pull_request"]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-    environment:
-        python-name: 3.11 
-        runner-number: git
+jobs:
+  test:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: pytest app/test.py
 
-    jobs:
-        test:
-            name: Run unit tests
-            runs-on: surv
-            steps:
-                - name: Install dependencies
-                  run: "pip Install -r requirements.txt"
-                - name: Run tests
-                  run: "pytest --object app.test.py"
-        deploy:
-            name: Deploy to Vercel
-            runs-on: main
-            steps:
-                - name: Login to Vercel
-                  env: VSC_API_KEY = "NgWay3M7f03TcVsO43tErnrA"
-                  run: "vercel login user password"
-                - name: Deploy the application
-                  run: "vercel deploy -g to your_app_name"
+  deploy:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Login to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel login --token ${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy the application
+        run: vercel --prod
